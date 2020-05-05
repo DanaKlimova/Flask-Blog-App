@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -18,9 +18,40 @@ class Post(db.Model):
         return f"Post {self.id}"
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return "Hello, world."
+    posts = Post.query.all()
+    if request.method == "GET":
+        return render_template("index.html", posts=posts)
+    else:
+        title = request.form.get("title")
+        author = request.form.get("author")
+        content = request.form.get("content")
+        new_post = Post(title=title, author=author, content=content)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for("index"))
+
+
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_post(id):
+    post = Post.query.get(id)
+    if request.method == "GET":
+        return render_template("edit_post.html", post=post)
+    else:
+        post.title = request.form.get("title")
+        post.author = request.form.get("author")
+        post.content = request.form.get("content")
+        db.session.commit()
+        return redirect(url_for("index"))
+
+
+@app.route("/delete/<int:id>", methods=["POST"])
+def delete_post(id):
+    post = Post.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect(url_for("index"))
 
 
 if __name__ == '__main__':
