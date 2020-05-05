@@ -33,6 +33,19 @@ def index():
         return redirect(url_for("index"))
 
 
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_post(id):
+    post = Post.query.get(id)
+    if request.method == "GET":
+        return render_template("edit_post.html", post=post)
+    else:
+        post.title = request.form.get("title")
+        post.author = request.form.get("author")
+        post.content = request.form.get("content")
+        db.session.commit()
+        return redirect(url_for("index"))
+
+
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete_post(id):
     post = Post.query.get(id)
