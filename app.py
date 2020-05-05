@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -18,9 +18,18 @@ class Post(db.Model):
         return f"Post {self.id}"
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return "Hello, world."
+    posts = Post.query.all()
+    if request.method == "POST":
+        title = request.form.get("title")
+        author = request.form.get("author")
+        content = request.form.get("content")
+        new_post = Post(title=title, author=author, content=content)
+        db.session.add(new_post)
+        db.session.commit()
+
+    return render_template("index.html", posts=posts)
 
 
 if __name__ == '__main__':
