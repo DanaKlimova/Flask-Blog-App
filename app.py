@@ -23,11 +23,10 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/posts", methods=["GET", "POST"])
-def posts():
-    posts = Post.query.all()
+@app.route("/create", methods=["GET", "POST"])
+def create():
     if request.method == "GET":
-        return render_template("posts.html", posts=posts)
+        return render_template("create.html")
     else:
         title = request.form.get("title")
         author = request.form.get("author")
@@ -36,6 +35,13 @@ def posts():
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for("posts"))
+
+
+@app.route("/posts")
+def posts():
+    posts = Post.query.all()
+    if request.method == "GET":
+        return render_template("posts.html", posts=posts)
 
 
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
