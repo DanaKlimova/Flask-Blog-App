@@ -18,11 +18,16 @@ class Post(db.Model):
         return f"Post {self.id}"
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
+    return render_template("index.html")
+
+
+@app.route("/posts", methods=["GET", "POST"])
+def posts():
     posts = Post.query.all()
     if request.method == "GET":
-        return render_template("index.html", posts=posts)
+        return render_template("posts.html", posts=posts)
     else:
         title = request.form.get("title")
         author = request.form.get("author")
@@ -30,7 +35,7 @@ def index():
         new_post = Post(title=title, author=author, content=content)
         db.session.add(new_post)
         db.session.commit()
-        return redirect(url_for("index"))
+        return redirect(url_for("posts"))
 
 
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
@@ -43,7 +48,7 @@ def edit_post(id):
         post.author = request.form.get("author")
         post.content = request.form.get("content")
         db.session.commit()
-        return redirect(url_for("index"))
+        return redirect(url_for("posts"))
 
 
 @app.route("/delete/<int:id>", methods=["POST"])
@@ -51,7 +56,7 @@ def delete_post(id):
     post = Post.query.get(id)
     db.session.delete(post)
     db.session.commit()
-    return redirect(url_for("index"))
+    return redirect(url_for("posts"))
 
 
 if __name__ == '__main__':
