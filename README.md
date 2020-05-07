@@ -9,4 +9,14 @@ Run:
 2. create venv `python3 -m venv venv`
 3. activate venv `source venv/bin/activate`
 4. install requirements `pip install -r requirements.txt`
-5. run `python app.py`
+5. create DB 
+
+  * run python REPL `python`
+   
+  * import db `from app import db`
+   
+  * create DB `db.create_all()`
+   
+  * exit `exit()`
+   
+6. run `python app.py`
